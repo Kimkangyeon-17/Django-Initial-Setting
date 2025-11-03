@@ -18,4 +18,43 @@ dev = [
     "flake8>=7.3.0",
     "pytest>=8.4.1",
     "pytest-django>=4.11.1",
+    "pre-commit>=4.0.0",
+    "isort>=5.13.2",
 ]
+
+# Black 설정
+[tool.black]
+line-length = 88
+target-version = ['py313']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # 기본 제외 디렉토리들
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | migrations
+)/
+'''
+
+# isort 설정 (Black과 호환)
+[tool.isort]
+profile = "black"
+line_length = 88
+skip_gitignore = true
+known_django = "django"
+known_first_party = ["config", "api", "apps"]
+sections = ["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+# Pytest 설정
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+addopts = "-v --tb=short"

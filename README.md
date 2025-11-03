@@ -4,7 +4,7 @@ Django와 Django REST Framework를 사용한 백엔드 개발을 위한 템플�
 
 ## 🛠️ 기술 스택
 
-- **Python**: 3.12+
+- **Python**: 3.13
 - **Django**: 최신 버전
 - **Django REST Framework**: REST API 개발
 - **UV**: 패키지 관리 및 가상환경
@@ -22,8 +22,10 @@ Django와 Django REST Framework를 사용한 백엔드 개발을 위한 템플�
 ### 개발용 패키지
 - `black`: 코드 포맷터
 - `flake8`: 코드 린터
+- `isort`: import 정렬
 - `pytest`: 테스트 프레임워크
 - `pytest-django`: Django용 pytest 플러그인
+- `pre-commit`: Git 커밋 전 자동 코드 검사
 
 ## 🚀 빠른 시작
 
@@ -34,7 +36,7 @@ cd my-new-project
 ```
 
 ### 2. 환경변수 설정
-`.env` 파일을 수정하여 프로젝트에 맞게 설정하세요:
+`.env` 파일을 생성하고 프로젝트에 맞게 설정하세요:
 ```env
 DEBUG=True
 SECRET_KEY=your-new-secret-key-here
@@ -47,6 +49,9 @@ DATABASE_URL=sqlite:///db.sqlite3
 # 패키지 설치
 uv sync
 
+# Pre-commit 설치 (최초 1회만)
+uv run pre-commit install
+
 # 마이그레이션
 uv run python manage.py migrate
 
@@ -55,6 +60,49 @@ uv run python manage.py createsuperuser
 
 # 개발 서버 실행
 uv run python manage.py runserver
+```
+
+## 🎯 Pre-commit 설정
+
+### Pre-commit이란?
+Git 커밋하기 전에 자동으로 코드를 검사하고 포맷팅하는 도구입니다.
+
+### 설치 방법
+```bash
+# 1. pre-commit 설치 (최초 1회)
+uv run pre-commit install
+
+# 2. 모든 파일에 대해 한 번 실행해보기 (선택사항)
+uv run pre-commit run --all-files
+```
+
+### 동작 방식
+Git 커밋할 때 자동으로 다음 작업들을 수행합니다:
+- ✅ **Black**: 코드 자동 포맷팅
+- ✅ **isort**: import 문 자동 정렬
+- ✅ **Flake8**: 코드 스타일 체크
+- ✅ **기본 체크**: 파일 끝 공백, 큰 파일, YAML/JSON 문법 등
+
+### 사용 예시
+```bash
+# 일반적인 커밋 (자동으로 pre-commit 실행됨)
+git add .
+git commit -m "feat: 새 기능 추가"
+
+# 특정 파일만 체크
+uv run pre-commit run --files api/views.py
+
+# 모든 파일 체크 (커밋 없이)
+uv run pre-commit run --all-files
+
+# Pre-commit 훅 업데이트
+uv run pre-commit autoupdate
+```
+
+### Pre-commit 건너뛰기 (비추천)
+```bash
+# 특별한 경우에만 사용
+git commit -m "메시지" --no-verify
 ```
 
 ## 📁 프로젝트 구조
@@ -74,6 +122,8 @@ project/
 ├── media/              # 업로드된 미디어 파일
 ├── templates/          # Django 템플릿
 ├── .env                # 환경변수 (Git에 포함되지 않음)
+├── .pre-commit-config.yaml  # Pre-commit 설정
+├── .flake8             # Flake8 설정
 ├── pyproject.toml      # UV 프로젝트 설정
 └── README.md
 ```
@@ -82,17 +132,29 @@ project/
 
 ### 코드 포맷팅
 ```bash
+# Black으로 자동 포맷팅
 uv run black .
+
+# isort로 import 정렬
+uv run isort .
 ```
 
 ### 코드 린팅
 ```bash
+# Flake8으로 코드 스타일 체크
 uv run flake8
 ```
 
 ### 테스트 실행
 ```bash
+# 모든 테스트 실행
 uv run pytest
+
+# 특정 테스트 파일만 실행
+uv run pytest tests/test_api.py
+
+# 커버리지와 함께 실행
+uv run pytest --cov
 ```
 
 ## 📝 새 앱 추가하기
@@ -123,11 +185,34 @@ LOCAL_APPS = [
 4. 데이터베이스 설정 변경
 5. HTTPS 설정
 
+## 💡 개발 팁
+
+### VS Code 추천 익스텐션
+- Python
+- Pylance
+- Django
+- GitLens
+- Better Comments
+
+### VS Code 설정 (.vscode/settings.json)
+```json
+{
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.formatting.provider": "black",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  }
+}
+```
+
 ## 📚 추가 리소스
 
 - [Django 공식 문서](https://docs.djangoproject.com/)
 - [Django REST Framework 문서](https://www.django-rest-framework.org/)
 - [UV 공식 문서](https://docs.astral.sh/uv/)
+- [Pre-commit 공식 문서](https://pre-commit.com/)
 
 ## 🤝 기여하기
 

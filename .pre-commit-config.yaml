@@ -1,0 +1,53 @@
+repos:
+  # 기본적인 파일 체크
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      # 파일 끝에 빈 줄이 있는지 확인
+      - id: end-of-file-fixer
+      # 줄 끝의 공백 제거
+      - id: trailing-whitespace
+      # YAML 파일 문법 체크
+      - id: check-yaml
+      # JSON 파일 문법 체크
+      - id: check-json
+      # 큰 파일이 추가되는 것 방지 (500KB 이상)
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      # merge 충돌 마커가 있는지 체크
+      - id: check-merge-conflict
+      # Python docstring이 """ 로 시작하는지 체크
+      - id: check-docstring-first
+      # requirements.txt 정렬
+      - id: requirements-txt-fixer
+
+  # Black - Python 코드 포맷터
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        language_version: python3.13
+        args: ['--line-length=88']
+
+  # Flake8 - Python 코드 린터
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0
+    hooks:
+      - id: flake8
+        args: ['--max-line-length=88', '--extend-ignore=E203,W503']
+        # E203: black과 충돌하는 규칙
+        # W503: black과 충돌하는 규칙
+
+  # isort - import 정렬 (black과 호환되는 설정)
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ['--profile', 'black']
+
+  # Django specific checks
+  - repo: https://github.com/adamchainz/django-upgrade
+    rev: 1.22.2
+    hooks:
+      - id: django-upgrade
+        args: ['--target-version', '5.0']
