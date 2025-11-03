@@ -18,6 +18,7 @@ Django와 Django REST Framework를 사용한 백엔드 개발을 위한 템플�
 - `django-cors-headers`: CORS 처리
 - `python-decouple`: 환경변수 관리
 - `pillow`: 이미지 처리
+- `drf-spectacular`: API 자동 문서화 (Swagger/ReDoc)
 
 ### 개발용 패키지
 - `black`: 코드 포맷터
@@ -36,12 +37,26 @@ cd my-new-project
 ```
 
 ### 2. 환경변수 설정
-`.env` 파일을 생성하고 프로젝트에 맞게 설정하세요:
+```bash
+# .env.example을 복사하여 .env 파일 생성
+cp .env.example .env
+
+# .env 파일을 열어서 필요한 값들을 수정하세요
+# 최소한 SECRET_KEY는 새로운 키로 변경해야 합니다
+```
+
+**.env 파일 예시:**
 ```env
 DEBUG=True
 SECRET_KEY=your-new-secret-key-here
 ALLOWED_HOSTS=localhost,127.0.0.1
 DATABASE_URL=sqlite:///db.sqlite3
+CORS_ALLOWED_ORIGINS=http://localhost:3000
+```
+
+**SECRET_KEY 생성 방법:**
+```bash
+python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
 
 ### 3. 의존성 설치 및 서버 실행
@@ -122,10 +137,12 @@ project/
 ├── media/              # 업로드된 미디어 파일
 ├── templates/          # Django 템플릿
 ├── .env                # 환경변수 (Git에 포함되지 않음)
+├── .env.example        # 환경변수 템플릿 (Git에 포함)
 ├── .pre-commit-config.yaml  # Pre-commit 설정
 ├── .flake8             # Flake8 설정
 ├── pyproject.toml      # UV 프로젝트 설정
-└── README.md
+├── README.md
+└── API_DOCUMENTATION_GUIDE.md  # API 문서화 가이드
 ```
 
 ## 🔧 개발 도구
@@ -171,9 +188,36 @@ LOCAL_APPS = [
 
 ## 🌐 API 엔드포인트
 
+### 기본 엔드포인트
 - `/api/` - API 루트
 - `/api/health/` - 헬스 체크
 - `/admin/` - Django 관리자
+
+### API 문서 (drf-spectacular)
+- `/api/docs/` - **Swagger UI** (추천! 웹에서 API 테스트 가능)
+- `/api/redoc/` - **ReDoc UI** (깔끔한 문서 뷰)
+- `/api/schema/` - OpenAPI 3.0 스키마 (JSON)
+
+#### API 문서 사용법
+1. 서버 실행: `uv run python manage.py runserver`
+2. 브라우저에서 접속: `http://localhost:8000/api/docs/`
+3. Swagger UI에서 바로 API 테스트 가능!
+
+#### API 문서화 방법
+```python
+from drf_spectacular.utils import extend_schema, OpenApiResponse
+
+@extend_schema(
+    summary="API 요약",
+    description="API 상세 설명",
+    responses={200: YourSerializer},
+    tags=["카테고리"],
+)
+@api_view(['GET'])
+def your_api(request):
+    # your code
+    pass
+```
 
 ## 🔒 보안 설정
 
